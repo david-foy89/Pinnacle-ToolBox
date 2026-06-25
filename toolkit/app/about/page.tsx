@@ -2,8 +2,9 @@ import { generatePageMetadata } from "@/lib/seo";
 
 export const metadata = generatePageMetadata(
   "About",
-  "Learn about Pinnacle Toolbox — free browser-based online tools with no login required.",
-  "/about"
+  "Learn about Pinnacle Toolbox — 60+ free browser-based online tools for text, images, code, and productivity. No login, no data collection.",
+  "/about",
+  ["about pinnacle toolbox", "free online tools", "browser-based utilities", "privacy-first tools"]
 );
 
 export default function AboutPage() {

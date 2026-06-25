@@ -4,8 +4,8 @@ import {
 import type { Tool, ToolCategory } from "./types";
 import { SITE_NAME } from "./utils";
 
-function makeMetaDesc(description: string, name: string): string {
-  const base = description + " Free online " + name.toLowerCase() + " tool — fast, private, no login. Runs in your browser.";
+function makeMetaDesc(description: string, name: string, category: string): string {
+  const base = `Free ${name.toLowerCase()} online — ${description} Private, instant, no sign-up. ${category} tool that runs in your browser.`;
   return base.length <= 160 ? base : base.slice(0, 157) + "...";
 }
 
@@ -30,7 +30,18 @@ function makeHowTo(name: string): string[] {
 }
 
 function mk(slug: string, name: string, category: ToolCategory, description: string, icon: Tool["icon"], relatedTools: string[]): Tool {
-  return { slug, name, category, description, icon, relatedTools, metaTitle: `${name} — Free Online Tool | ${SITE_NAME}`, metaDescription: makeMetaDesc(description, name), faqs: makeFaqs(name), howToUse: makeHowTo(name) };
+  return {
+    slug,
+    name,
+    category,
+    description,
+    icon,
+    relatedTools,
+    metaTitle: `Free ${name} Online — No Login | ${SITE_NAME}`,
+    metaDescription: makeMetaDesc(description, name, category),
+    faqs: makeFaqs(name),
+    howToUse: makeHowTo(name),
+  };
 }
 
 export const tools: Tool[] = [

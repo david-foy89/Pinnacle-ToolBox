@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getToolBySlug } from "@/lib/tools";
-import { generateSoftwareApplicationJsonLd } from "@/lib/seo";
+import { generateToolPageJsonLd } from "@/lib/seo";
 import AdSlot from "./AdSlot";
 import Sidebar from "./Sidebar";
 import HowToUse from "./HowToUse";
@@ -17,7 +17,7 @@ export default function ToolLayout({ slug, children }: ToolLayoutProps) {
   const tool = getToolBySlug(slug);
   if (!tool) notFound();
 
-  const jsonLd = generateSoftwareApplicationJsonLd(tool);
+  const jsonLd = generateToolPageJsonLd(tool);
 
   return (
     <>

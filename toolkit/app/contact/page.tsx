@@ -3,8 +3,9 @@ import ContactForm from "@/components/ContactForm";
 
 export const metadata = generatePageMetadata(
   "Contact",
-  "Contact Pinnacle Toolbox. Get in touch with questions, feedback, or suggestions.",
-  "/contact"
+  "Contact Pinnacle Toolbox with questions, feedback, or tool suggestions. We respond to all inquiries about our free online tools.",
+  "/contact",
+  ["contact pinnacle toolbox", "tool feedback", "support", "suggestions"]
 );
 
 export default function ContactPage() {

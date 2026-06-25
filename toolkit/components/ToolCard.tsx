@@ -12,7 +12,11 @@ interface ToolCardProps {
 
 export default function ToolCard({ icon: Icon, title, description, href }: ToolCardProps) {
   return (
-    <Link href={href} className="tool-card group flex flex-col">
+    <Link
+      href={href}
+      className="tool-card group flex flex-col"
+      title={`Free ${title} — open online tool`}
+    >
       <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-brand-red/15 text-brand-red ring-1 ring-brand-red/20 transition group-hover:bg-brand-blue/15 group-hover:text-brand-blue group-hover:ring-brand-blue/30">
         <Icon className="h-5 w-5" aria-hidden />
       </div>

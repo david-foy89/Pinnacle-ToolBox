@@ -3,8 +3,9 @@ import Link from "next/link";
 
 export const metadata = generatePageMetadata(
   "Privacy Policy",
-  "Privacy policy for Pinnacle Toolbox. All tools run client-side in your browser with no data collection.",
-  "/privacy"
+  "Pinnacle Toolbox privacy policy. All tools run client-side in your browser — we do not collect or store your data.",
+  "/privacy",
+  ["privacy policy", "data privacy", "client-side tools", "no data collection"]
 );
 
 export default function PrivacyPage() {
