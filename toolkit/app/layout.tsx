@@ -66,6 +66,11 @@ export default function RootLayout({
     <html lang="en" className={inter.variable} style={{ backgroundColor: "#010109" }}>
       <head>
         <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1014488780102797"
+          crossOrigin="anonymous"
+        />
+        <script
           dangerouslySetInnerHTML={{
             __html: `if(location.hostname==="david-foy89.github.io"){var p=location.pathname.indexOf("/Pinnacle-ToolBox")===0?location.pathname.slice(17)||"/":location.pathname;location.replace("https://pinnacletoolbox.com"+p+location.search+location.hash);}`,
           }}
