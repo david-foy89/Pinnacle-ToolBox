@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { marked } from "marked";
+import { sanitizeHtml } from "@/lib/sanitize";
 import { ToolTextarea } from "@/components/tools/ui";
 import CopyButton from "@/components/CopyButton";
 
@@ -20,7 +21,8 @@ console.log("code block");
 
   const html = useMemo(() => {
     try {
-      return marked.parse(markdown, { async: false }) as string;
+      const raw = marked.parse(markdown, { async: false }) as string;
+      return sanitizeHtml(raw);
     } catch {
       return "<p>Unable to parse markdown</p>";
     }

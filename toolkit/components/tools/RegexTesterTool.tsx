@@ -41,6 +41,8 @@ function buildHighlightedText(text: string, regex: RegExp | null): React.ReactNo
   return parts.length > 0 ? parts : [text];
 }
 
+const MAX_REGEX_INPUT = 50_000;
+
 export default function RegexTesterTool() {
   const [pattern, setPattern] = useState("");
   const [testString, setTestString] = useState("");
@@ -51,6 +53,13 @@ export default function RegexTesterTool() {
   const flags = `${flagG ? "g" : ""}${flagI ? "i" : ""}${flagM ? "m" : ""}${flagS ? "s" : ""}`;
 
   const { regex, matches, parseError } = useMemo(() => {
+    if (testString.length > MAX_REGEX_INPUT) {
+      return {
+        regex: null,
+        matches: [] as MatchInfo[],
+        parseError: `Test string is limited to ${MAX_REGEX_INPUT.toLocaleString()} characters.`,
+      };
+    }
     if (!pattern) return { regex: null, matches: [] as MatchInfo[], parseError: null };
     try {
       const re = new RegExp(pattern, flags);

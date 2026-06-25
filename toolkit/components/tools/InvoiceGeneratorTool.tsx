@@ -48,7 +48,15 @@ export default function InvoiceGeneratorTool() {
   const downloadPdf = () => {
     const doc = new jsPDF();
     const margin = 20;
+    const pageHeight = doc.internal.pageSize.getHeight();
     let y = 20;
+
+    const ensureSpace = (needed: number) => {
+      if (y + needed > pageHeight - margin) {
+        doc.addPage();
+        y = margin;
+      }
+    };
 
     doc.setFontSize(24);
     doc.setFont("helvetica", "bold");
@@ -103,6 +111,7 @@ export default function InvoiceGeneratorTool() {
 
     doc.setFont("helvetica", "normal");
     for (const item of items.filter((i) => i.description)) {
+      ensureSpace(10);
       const amount = item.quantity * item.rate;
       doc.text(item.description.slice(0, 40), margin, y);
       doc.text(String(item.quantity), 110, y);
@@ -112,6 +121,7 @@ export default function InvoiceGeneratorTool() {
     }
 
     y += 5;
+    ensureSpace(25);
     doc.text("Subtotal:", 130, y);
     doc.text(formatCurrency(subtotal), 160, y);
     y += 7;
@@ -125,12 +135,18 @@ export default function InvoiceGeneratorTool() {
     doc.text(formatCurrency(total), 160, y);
 
     if (notes) {
+      ensureSpace(20);
       y += 15;
       doc.setFont("helvetica", "bold");
       doc.text("Notes:", margin, y);
       y += 5;
       doc.setFont("helvetica", "normal");
-      doc.text(doc.splitTextToSize(notes, 170), margin, y);
+      const noteLines = doc.splitTextToSize(notes, 170);
+      for (const line of noteLines) {
+        ensureSpace(7);
+        doc.text(line, margin, y);
+        y += 5;
+      }
     }
 
     downloadBlob(doc.output("blob"), `invoice-${invoiceNumber}.pdf`);

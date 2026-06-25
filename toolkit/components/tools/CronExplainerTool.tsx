@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { CronExpressionParser } from "cron-parser";
+import { normalizeCronExpression } from "@/lib/cron";
 import { ToolInput, StatCard } from "@/components/tools/ui";
 const FIELD_LABELS = ["second", "minute", "hour", "day of month", "month", "day of week"] as const;
 
@@ -83,7 +84,8 @@ export default function CronExplainerTool() {
     if (!trimmed) return null;
 
     try {
-      const interval = CronExpressionParser.parse(trimmed);
+      const normalized = normalizeCronExpression(trimmed);
+      const interval = CronExpressionParser.parse(normalized);
       const nextRuns: string[] = [];
       for (let i = 0; i < 5; i++) {
         nextRuns.push(interval.next().toDate().toLocaleString());

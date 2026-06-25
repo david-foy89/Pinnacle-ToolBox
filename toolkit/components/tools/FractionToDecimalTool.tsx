@@ -7,30 +7,39 @@ import { ToolInput, OutputBox } from "@/components/tools/ui";
 
 type Tab = "to-decimal" | "to-fraction";
 
-function decimalToFraction(decimal: number, maxDen = 1_000_000): { num: number; den: number } | null {
+function decimalToFraction(decimal: number, maxDenominator = 10_000): { num: number; den: number } | null {
   if (!Number.isFinite(decimal)) return null;
   if (decimal === 0) return { num: 0, den: 1 };
 
   const sign = decimal < 0 ? -1 : 1;
-  const abs = Math.abs(decimal);
+  const x = Math.abs(decimal);
 
-  let bestNum = 1;
-  let bestDen = 1;
-  let bestErr = Math.abs(abs - bestNum / bestDen);
+  let prevNum = 0;
+  let num = 1;
+  let prevDen = 1;
+  let den = 0;
+  let fraction = x;
 
-  for (let den = 1; den <= maxDen; den++) {
-    const num = Math.round(abs * den);
-    const err = Math.abs(abs - num / den);
-    if (err < bestErr) {
-      bestErr = err;
-      bestNum = num;
-      bestDen = den;
-      if (err < 1e-10) break;
-    }
+  for (let i = 0; i < 32; i++) {
+    const whole = Math.floor(fraction);
+    const nextNum = whole * num + prevNum;
+    const nextDen = whole * den + prevDen;
+
+    if (nextDen > maxDenominator) break;
+
+    prevNum = num;
+    num = nextNum;
+    prevDen = den;
+    den = nextDen;
+
+    if (Math.abs(x - num / den) < 1e-10) break;
+
+    const remainder = fraction - whole;
+    if (remainder < 1e-12) break;
+    fraction = 1 / remainder;
   }
 
-  const simplified = simplifyFraction(sign * bestNum, bestDen);
-  return simplified;
+  return simplifyFraction(sign * num, den);
 }
 
 export default function FractionToDecimalTool() {

@@ -3,22 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ToolButton, StatCard } from "@/components/tools/ui";
 import { downloadBlob, formatBytes } from "@/lib/utils";
-
-function loadImage(file: File): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      resolve(img);
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error("Failed to load image"));
-    };
-    img.src = url;
-  });
-}
+import { loadImageFromFile } from "@/lib/image";
 
 export default function ImageCompressorTool() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -30,7 +15,7 @@ export default function ImageCompressorTool() {
   const [error, setError] = useState<string | null>(null);
 
   const estimateSize = useCallback(async (f: File, q: number) => {
-    const img = await loadImage(f);
+    const img = await loadImageFromFile(f);
     const canvas = canvasRef.current;
     if (!canvas) return;
     canvas.width = img.width;
@@ -60,8 +45,8 @@ export default function ImageCompressorTool() {
         return url;
       });
       await estimateSize(f, quality);
-    } catch {
-      setError("Failed to load image.");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load image.");
     }
   }, [quality, estimateSize]);
 
@@ -71,7 +56,7 @@ export default function ImageCompressorTool() {
 
   const compress = useCallback(async () => {
     if (!file) return;
-    const img = await loadImage(file);
+    const img = await loadImageFromFile(file);
     const canvas = canvasRef.current;
     if (!canvas) return;
     canvas.width = img.width;
@@ -87,6 +72,7 @@ export default function ImageCompressorTool() {
   }, [file, quality]);
 
   const savings = originalSize > 0 ? Math.round((1 - estimatedSize / originalSize) * 100) : 0;
+  const isPng = file?.type === "image/png";
 
   return (
     <div className="space-y-6">
@@ -120,8 +106,14 @@ export default function ImageCompressorTool() {
               max={100}
               value={quality}
               onChange={(e) => setQuality(Number(e.target.value))}
-              className="w-full accent-accent"
+              disabled={isPng}
+              className="w-full accent-accent disabled:opacity-50"
             />
+            {isPng && (
+              <p className="mt-1 text-xs text-brand-silver-muted">
+                PNG is lossless — quality only applies when exporting as JPEG. Download still saves PNG.
+              </p>
+            )}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3">

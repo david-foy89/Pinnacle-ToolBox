@@ -4,14 +4,7 @@ import { useMemo, useState } from "react";
 import { ToolTextarea, OutputBox } from "@/components/tools/ui";
 import { cn } from "@/lib/utils";
 
-function decodeBase64Url(str: string): string {
-  const padded = str.replace(/-/g, "+").replace(/_/g, "/");
-  const pad = padded.length % 4;
-  const base64 = pad ? padded + "=".repeat(4 - pad) : padded;
-  return decodeURIComponent(
-    escape(atob(base64))
-  );
-}
+import { decodeBase64Url } from "@/lib/encoding";
 
 function parseJwtPart(part: string): { json: string; error: string | null } {
   try {

@@ -17,6 +17,14 @@ const TABS: { id: QrTab; label: string }[] = [
   { id: "vcard", label: "vCard" },
 ];
 
+function escapeWifiField(value: string): string {
+  return value.replace(/([\\;,"])/g, "\\$1");
+}
+
+function escapeVCardField(value: string): string {
+  return value.replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
+}
+
 function buildQrContent(tab: QrTab, fields: Record<string, string>): string {
   switch (tab) {
     case "url":
@@ -30,16 +38,16 @@ function buildQrContent(tab: QrTab, fields: Record<string, string>): string {
     case "sms":
       return `sms:${fields.smsPhone}?body=${encodeURIComponent(fields.smsBody || "")}`;
     case "wifi":
-      return `WIFI:T:${fields.wifiSecurity || "WPA"};S:${fields.wifiSsid};P:${fields.wifiPassword};;`;
+      return `WIFI:T:${escapeWifiField(fields.wifiSecurity || "WPA")};S:${escapeWifiField(fields.wifiSsid)};P:${escapeWifiField(fields.wifiPassword)};;`;
     case "vcard":
       return [
         "BEGIN:VCARD",
         "VERSION:3.0",
-        `FN:${fields.vcardName}`,
-        fields.vcardOrg ? `ORG:${fields.vcardOrg}` : "",
-        fields.vcardPhone ? `TEL:${fields.vcardPhone}` : "",
-        fields.vcardEmail ? `EMAIL:${fields.vcardEmail}` : "",
-        fields.vcardUrl ? `URL:${fields.vcardUrl}` : "",
+        `FN:${escapeVCardField(fields.vcardName)}`,
+        fields.vcardOrg ? `ORG:${escapeVCardField(fields.vcardOrg)}` : "",
+        fields.vcardPhone ? `TEL:${escapeVCardField(fields.vcardPhone)}` : "",
+        fields.vcardEmail ? `EMAIL:${escapeVCardField(fields.vcardEmail)}` : "",
+        fields.vcardUrl ? `URL:${escapeVCardField(fields.vcardUrl)}` : "",
         "END:VCARD",
       ].filter(Boolean).join("\n");
     default:

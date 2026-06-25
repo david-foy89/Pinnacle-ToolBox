@@ -370,7 +370,9 @@ export function jsonToCsv(data: Record<string, unknown>[]): string {
   if (data.length === 0) return "";
   const headers = Array.from(new Set(data.flatMap((row) => Object.keys(row))));
   const escape = (v: unknown): string => {
-    const s = v === null || v === undefined ? "" : String(v);
+    if (v === null || v === undefined) return "";
+    if (typeof v === "object") return JSON.stringify(v);
+    const s = String(v);
     if (s.includes(",") || s.includes('"') || s.includes("\n")) return `"${s.replace(/"/g, '""')}"`;
     return s;
   };

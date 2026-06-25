@@ -4,22 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import exifr from "exifr";
 import { ToolButton, OutputBox } from "@/components/tools/ui";
 import { downloadBlob, formatBytes } from "@/lib/utils";
-
-function loadImage(file: File): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      resolve(img);
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error("Failed to load image"));
-    };
-    img.src = url;
-  });
-}
+import { loadImageFromFile as loadImage } from "@/lib/image";
 
 export default function ExifRemoverTool() {
   const canvasRef = useRef<HTMLCanvasElement>(null);

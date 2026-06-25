@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { ToolTextarea, ToolButton, OutputBox } from "@/components/tools/ui";
 import CopyButton from "@/components/CopyButton";
 import { cn, formatBytes } from "@/lib/utils";
+import { encodeBase64Unicode, decodeBase64Unicode } from "@/lib/encoding";
 
 type Tab = "text" | "file";
 
@@ -21,9 +22,9 @@ export default function Base64EncoderTool() {
     setError(null);
     try {
       if (mode === "encode") {
-        setOutput(btoa(unescape(encodeURIComponent(input))));
+        setOutput(encodeBase64Unicode(input));
       } else {
-        setOutput(decodeURIComponent(escape(atob(input.trim()))));
+        setOutput(decodeBase64Unicode(input));
       }
     } catch {
       setError(mode === "decode" ? "Invalid Base64 string" : "Unable to encode text");

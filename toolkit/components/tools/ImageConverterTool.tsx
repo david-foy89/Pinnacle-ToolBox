@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from "react";
 import { ToolSelect, ToolButton } from "@/components/tools/ui";
 import { downloadBlob } from "@/lib/utils";
+import { loadImageFromFile as loadImage } from "@/lib/image";
 
 type OutputFormat = "image/png" | "image/jpeg" | "image/webp";
 
@@ -18,22 +19,6 @@ const EXT_MAP: Record<OutputFormat, string> = {
   "image/webp": "webp",
 };
 
-function loadImage(file: File): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      resolve(img);
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error("Failed to load image"));
-    };
-    img.src = url;
-  });
-}
-
 export default function ImageConverterTool() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [file, setFile] = useState<File | null>(null);
@@ -48,44 +33,49 @@ export default function ImageConverterTool() {
       return;
     }
     try {
+      await loadImage(f);
       setFile(f);
       const url = URL.createObjectURL(f);
       setPreview((prev) => {
         if (prev) URL.revokeObjectURL(prev);
         return url;
       });
-    } catch {
-      setError("Failed to load image.");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load image.");
     }
   }, []);
 
   const convert = useCallback(async () => {
     if (!file) return;
-    const img = await loadImage(file);
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    try {
+      const img = await loadImage(file);
+      const canvas = canvasRef.current;
+      if (!canvas) return;
 
-    canvas.width = img.width;
-    canvas.height = img.height;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
 
-    if (format === "image/jpeg") {
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      if (format === "image/jpeg") {
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      ctx.drawImage(img, 0, 0);
+      const ext = EXT_MAP[format];
+      const quality = format === "image/png" ? undefined : 0.92;
+
+      canvas.toBlob(
+        (blob) => {
+          if (blob) downloadBlob(blob, `converted.${ext}`);
+        },
+        format,
+        quality
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Conversion failed.");
     }
-
-    ctx.drawImage(img, 0, 0);
-    const ext = EXT_MAP[format];
-    const quality = format === "image/png" ? undefined : 0.92;
-
-    canvas.toBlob(
-      (blob) => {
-        if (blob) downloadBlob(blob, `converted.${ext}`);
-      },
-      format,
-      quality
-    );
   }, [file, format]);
 
   return (

@@ -5,6 +5,7 @@ import { ToolTextarea, ToolSelect, ToolButton, OutputBox } from "@/components/to
 import CopyButton from "@/components/CopyButton";
 // spark-md5 has no bundled types
 import SparkMD5 from "spark-md5";
+import { hasSecureCrypto, SECURE_CONTEXT_MESSAGE } from "@/lib/browser";
 
 type Algorithm = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512" | "MD5";
 
@@ -38,6 +39,11 @@ export default function HashGeneratorTool() {
       if (algorithm === "MD5") {
         setHash(SparkMD5.hash(input));
       } else {
+        if (!hasSecureCrypto()) {
+          setError(SECURE_CONTEXT_MESSAGE);
+          setHash("");
+          return;
+        }
         setHash(await hashWithSubtleCrypto(input, algorithm));
       }
     } catch (e) {

@@ -4,23 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import { ToolInput, ToolSelect } from "@/components/tools/ui";
 import CopyButton from "@/components/CopyButton";
 
-const TIMEZONES = Intl.supportedValuesOf("timeZone");
+import { getAllTimeZones, POPULAR_TIMEZONES as POPULAR } from "@/lib/timezones";
 
-const POPULAR = [
-  "America/New_York",
-  "America/Chicago",
-  "America/Denver",
-  "America/Los_Angeles",
-  "Europe/London",
-  "Europe/Paris",
-  "Europe/Berlin",
-  "Asia/Tokyo",
-  "Asia/Shanghai",
-  "Asia/Dubai",
-  "Australia/Sydney",
-  "Pacific/Auckland",
-  "UTC",
-];
+const TIMEZONES = getAllTimeZones();
 
 function formatInZone(date: Date, tz: string): string {
   return new Intl.DateTimeFormat("en-US", {

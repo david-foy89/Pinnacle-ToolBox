@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 import { ToolInput, ToolSelect } from "@/components/tools/ui";
 
+import { getAllTimeZones } from "@/lib/timezones";
+
 const POPULAR_ZONES = [
   "America/New_York",
   "America/Chicago",
@@ -14,7 +16,7 @@ const POPULAR_ZONES = [
   "Australia/Sydney",
 ];
 
-const ALL_ZONES = Intl.supportedValuesOf("timeZone");
+const ALL_ZONES = getAllTimeZones();
 const zoneOptions = [
   ...POPULAR_ZONES.map((z) => ({ value: z, label: z.replace(/_/g, " ") })),
   ...ALL_ZONES.filter((z) => !POPULAR_ZONES.includes(z)).map((z) => ({

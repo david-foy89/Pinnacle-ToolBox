@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import JSZip from "jszip";
 import { ToolButton } from "@/components/tools/ui";
 import { downloadBlob } from "@/lib/utils";
+import { loadImageFromFile as loadImage } from "@/lib/image";
 
 const SIZES = [
   { size: 16, name: "favicon-16x16.png" },
@@ -11,22 +12,6 @@ const SIZES = [
   { size: 48, name: "favicon-48x48.png" },
   { size: 180, name: "apple-touch-icon.png" },
 ] as const;
-
-function loadImage(file: File): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      resolve(img);
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error("Failed to load image"));
-    };
-    img.src = url;
-  });
-}
 
 function renderToBlob(img: HTMLImageElement, size: number): Promise<Blob> {
   return new Promise((resolve, reject) => {

@@ -37,7 +37,14 @@ export default function CountdownTimerTool() {
   const totalSeconds = hours * 3600 + minutes * 60 + seconds;
 
   useEffect(() => {
-    if (!running || remaining <= 0) return;
+    if (!running) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+      return;
+    }
+
     intervalRef.current = setInterval(() => {
       setRemaining((r) => {
         if (r <= 1) {
@@ -56,10 +63,14 @@ export default function CountdownTimerTool() {
         return r - 1;
       });
     }, 1000);
+
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
     };
-  }, [running, remaining, loop]);
+  }, [running, loop]);
 
   const handleStart = () => {
     if (remaining === 0) {

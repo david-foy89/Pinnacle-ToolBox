@@ -10,9 +10,14 @@ type DiffLine = {
   right: string;
 };
 
-function computeLineDiff(left: string, right: string): DiffLine[] {
+const MAX_DIFF_LINES = 1000;
+
+function computeLineDiff(left: string, right: string): DiffLine[] | { error: string } {
   const leftLines = left.split("\n");
   const rightLines = right.split("\n");
+  if (leftLines.length > MAX_DIFF_LINES || rightLines.length > MAX_DIFF_LINES) {
+    return { error: `Each side is limited to ${MAX_DIFF_LINES} lines for performance.` };
+  }
   const m = leftLines.length;
   const n = rightLines.length;
 
@@ -74,21 +79,29 @@ export default function TextDiffCheckerTool() {
   const [left, setLeft] = useState("");
   const [right, setRight] = useState("");
 
-  const diff = useMemo(() => computeLineDiff(left, right), [left, right]);
+  const { diff, diffError, summary } = useMemo(() => {
+    const result = computeLineDiff(left, right);
+    if ("error" in result) {
+      return {
+        diff: [] as DiffLine[],
+        diffError: result.error,
+        summary: { added: 0, removed: 0, changed: 0, same: 0 },
+      };
+    }
 
-  const summary = useMemo(() => {
     let added = 0;
     let removed = 0;
     let changed = 0;
     let same = 0;
-    for (const line of diff) {
+    for (const line of result) {
       if (line.type === "added") added++;
       else if (line.type === "removed") removed++;
       else if (line.type === "changed") changed++;
       else same++;
     }
-    return { added, removed, changed, same };
-  }, [diff]);
+
+    return { diff: result, diffError: null, summary: { added, removed, changed, same } };
+  }, [left, right]);
 
   return (
     <div className="space-y-6">
@@ -116,7 +129,11 @@ export default function TextDiffCheckerTool() {
         <StatCard label="Changed" value={summary.changed} />
       </div>
 
-      {(left || right) && (
+      {diffError && (
+        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{diffError}</p>
+      )}
+
+      {(left || right) && !diffError && (
         <div>
           <h3 className="mb-2 text-sm font-medium text-gray-700">Side-by-side diff</h3>
           <div className="overflow-x-auto rounded-lg border border-gray-200">

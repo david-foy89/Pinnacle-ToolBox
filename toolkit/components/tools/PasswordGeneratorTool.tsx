@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { ToolInput, ToolButton, ToolCheckbox } from "@/components/tools/ui";
 import CopyButton from "@/components/CopyButton";
 import { cn } from "@/lib/utils";
+import { hasRandomValues, SECURE_CONTEXT_MESSAGE } from "@/lib/browser";
 
 const UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const LOWER = "abcdefghijklmnopqrstuvwxyz";
@@ -84,6 +85,7 @@ export default function PasswordGeneratorTool() {
   const [useDigits, setUseDigits] = useState(true);
   const [useSymbols, setUseSymbols] = useState(true);
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const { strength, score, label } = useMemo(
     () => calcStrength(length, useUpper, useLower, useDigits, useSymbols),
@@ -91,6 +93,12 @@ export default function PasswordGeneratorTool() {
   );
 
   const handleGenerate = () => {
+    if (!hasRandomValues()) {
+      setError(SECURE_CONTEXT_MESSAGE);
+      setPassword("");
+      return;
+    }
+    setError(null);
     setPassword(generatePassword(length, useUpper, useLower, useDigits, useSymbols));
   };
 
@@ -136,6 +144,10 @@ export default function PasswordGeneratorTool() {
 
       {!hasCharset && (
         <p className="text-sm text-amber-700">Select at least one character set.</p>
+      )}
+
+      {error && (
+        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
       )}
 
       {password && (

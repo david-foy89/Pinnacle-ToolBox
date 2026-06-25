@@ -15,6 +15,11 @@ import { StatCard } from "@/components/tools/ui";
 
 function parseDateInput(value: string): Date | null {
   if (!value) return null;
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (match) {
+    const d = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+    return isValid(d) ? d : null;
+  }
   const d = parseISO(value);
   return isValid(d) ? d : null;
 }

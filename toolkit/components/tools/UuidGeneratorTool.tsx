@@ -3,18 +3,28 @@
 import { useState } from "react";
 import { ToolInput, ToolButton } from "@/components/tools/ui";
 import CopyButton from "@/components/CopyButton";
-
-function generateUuidV4(): string {
-  return crypto.randomUUID();
-}
+import { generateUuidV4, hasRandomValues, SECURE_CONTEXT_MESSAGE } from "@/lib/browser";
 
 export default function UuidGeneratorTool() {
   const [count, setCount] = useState(5);
   const [uuids, setUuids] = useState<string[]>([]);
 
+  const [error, setError] = useState<string | null>(null);
+
   const handleGenerate = () => {
+    if (!hasRandomValues()) {
+      setError(SECURE_CONTEXT_MESSAGE);
+      setUuids([]);
+      return;
+    }
+    setError(null);
     const n = Math.min(100, Math.max(1, count));
-    setUuids(Array.from({ length: n }, () => generateUuidV4()));
+    try {
+      setUuids(Array.from({ length: n }, () => generateUuidV4()));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Unable to generate UUIDs");
+      setUuids([]);
+    }
   };
 
   const allText = uuids.join("\n");
@@ -34,6 +44,10 @@ export default function UuidGeneratorTool() {
         <ToolButton onClick={handleGenerate}>Generate UUIDs</ToolButton>
         {uuids.length > 0 && <CopyButton text={allText} label="Copy All" />}
       </div>
+
+      {error && (
+        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+      )}
 
       {uuids.length > 0 && (
         <div>
