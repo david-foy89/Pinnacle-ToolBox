@@ -46,7 +46,10 @@ export default function Footer() {
           </div>
         </div>
         <p className="mt-8 border-t border-brand-navy-light/30 pt-6 text-center text-sm text-brand-silver-muted">
-          © {new Date().getFullYear()} Pinnacle Toolbox. All rights reserved.
+          © {new Date().getFullYear()} Pinnacle Toolbox. All rights reserved.{" "}
+          <Link href="/privacy" className="hover:text-brand-orange">
+            Privacy
+          </Link>
         </p>
       </div>
     </footer>

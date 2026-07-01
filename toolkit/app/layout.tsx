@@ -4,6 +4,8 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
+import AdSenseScript from "@/components/AdSenseScript";
+import CookieConsent from "@/components/CookieConsent";
 import { SITE_DESCRIPTION, DEFAULT_OG_IMAGE, SITE_TAGLINE } from "@/lib/seo";
 import { SITE_NAME, SITE_URL } from "@/lib/utils";
 
@@ -65,11 +67,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable} style={{ backgroundColor: "#010109" }}>
       <head>
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1014488780102797"
-          crossOrigin="anonymous"
-        />
+        <AdSenseScript />
         <script
           dangerouslySetInnerHTML={{
             __html: `if(location.hostname==="david-foy89.github.io"){var p=location.pathname.indexOf("/Pinnacle-ToolBox")===0?location.pathname.slice(17)||"/":location.pathname;location.replace("https://pinnacletoolbox.com"+p+location.search+location.hash);}`,
@@ -84,6 +82,7 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <Footer />
         <BackToTop />
+        <CookieConsent />
       </body>
     </html>
   );

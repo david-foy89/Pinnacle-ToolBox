@@ -6,6 +6,7 @@ import { Search, Shield, Zap, Globe } from "lucide-react";
 import { tools, getToolCount } from "@/lib/tools";
 import { CATEGORY_ORDER } from "@/lib/types";
 import ToolCard from "@/components/ToolCard";
+import AdSlot from "@/components/AdSlot";
 
 const HERO_FEATURES = [
   { icon: Zap, label: "Instant results" },
@@ -126,6 +127,7 @@ export default function HomePage() {
       </section>
 
       <div className="mx-auto max-w-7xl px-4 pb-16 pt-10">
+        <AdSlot size="banner" className="mb-10" />
         {grouped.map(({ category, tools: catTools }) => (
           <section
             key={category}
